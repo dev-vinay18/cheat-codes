@@ -1,4 +1,4 @@
-       PODS
+##       PODS
 
 apiVersion: v1
 kind: Pod
@@ -9,12 +9,12 @@ metadata:
 
 spec:
   containers:
-    name: nginx
-    image: nginx:latest
-    ports:
-      containerPort: 80
+    - name: nginx
+      image: nginx:latest
+      ports:
+       - containerPort: 80
 
-      SERVICES
+##      SERVICES
 
 apiVersion: v1
 kind: Service
