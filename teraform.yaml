@@ -1,11 +1,13 @@
+    ## main.tf
+
 provider "aws" {
     region = var.region
 }
 
 resource "aws_instance" "ec2" {
     ami = var.ami_id
-    instance_type = var.instance.type
-    key_name = "mumbai"
+    instance_type = var.instance_type
+    key_name = "tws-volumes-key"
     user_data = <<-EOF
         #!/bin/bash
         apt update -y
@@ -13,16 +15,16 @@ resource "aws_instance" "ec2" {
         systemctl start nginx
         systemctl enable nginx
     EOF
-    vpc_seurity_group_ids = [aws_security_group.my-sg.id]
+    vpc_security_group_ids = [aws_security_group.my-sg1.id]
     tags = {
         Name = "my-ec2"
     }
 }
 
-resource "aws_security_group" "my-sg" {
-    name = "my-sg"
+resource "aws_security_group" "my-sg1" {
+    name = "my-sg1"
     description = "SSH and HTTP are allowed"
-    vpc_id = ""
+    vpc_id = "vpc-0df645a043bb0465e"
 
     ingress {
         from_port = 22
@@ -30,13 +32,13 @@ resource "aws_security_group" "my-sg" {
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
-   ingress {
+    ingress {
         from_port = 80
         to_port = 80
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
-    ingress {
+    egress {
         from_port = 0
         to_port = 0
         protocol = "-1"
@@ -45,10 +47,10 @@ resource "aws_security_group" "my-sg" {
 }
 
 variable "region" {
-      default = "ap-south-1"
+      default = "us-east-1"
 }
 variable "ami_id" {
-      default = ""
+      default = "ami-0b6d9d3d33ba97d99"
 }
 variable "instance_type" {
       default = "t3.micro"
