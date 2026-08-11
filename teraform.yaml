@@ -1,0 +1,57 @@
+provider "aws" {
+    region = var.region
+}
+
+resource "aws_instance" "ec2" {
+    ami = var.ami_id
+    instance_type = var.instance.type
+    key_name = "mumbai"
+    user_data = <<-EOF
+        #!/bin/bash
+        apt update -y
+        apt install nginx -y
+        systemctl start nginx
+        systemctl enable nginx
+    EOF
+    vpc_seurity_group_ids = [aws_security_group.my-sg.id]
+    tags = {
+        Name = "my-ec2"
+    }
+}
+
+resource "aws_security_group" "my-sg" {
+    name = "my-sg"
+    description = "SSH and HTTP are allowed"
+    vpc_id = ""
+
+    ingress {
+        from_port = 22
+        to_port = 22 
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+   ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    ingress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+}
+
+variable "region" {
+      default = "ap-south-1"
+}
+variable "ami_id" {
+      default = ""
+}
+variable "instance_type" {
+      default = "t3.micro"
+}
+
+
